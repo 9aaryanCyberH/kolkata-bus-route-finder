@@ -3,61 +3,53 @@
     {
       "name": "215A",
       "color": "#2563eb",
+      "timings": ["06:30", "07:30", "08:30", "09:30", "11:00", "13:30"],
       "stops": [
-        { "name": "Barasat",      "coords": [22.7218, 88.4814] },
-        { "name": "Madhyamgram",  "coords": [22.6895, 88.4662] },
-        { "name": "Dum Dum",      "coords": [22.6222, 88.3944] },
-        { "name": "Ultadanga",    "coords": [22.5935, 88.3970] },
-        { "name": "Sealdah",      "coords": [22.5673, 88.3695] },
-        { "name": "Esplanade",    "coords": [22.5675, 88.3476] }
+        {"name":"Barasat","coords":[22.7218,88.4814]},
+        {"name":"Madhyamgram","coords":[22.6895,88.4662]},
+        {"name":"Dum Dum","coords":[22.6276,88.4220]},
+        {"name":"Ultadanga","coords":[22.5996,88.4016]},
+        {"name":"Sealdah","coords":[22.5673,88.3695]},
+        {"name":"Esplanade","coords":[22.5675,88.3476]}
       ]
     },
     {
       "name": "223",
       "color": "#16a34a",
+      "timings": ["06:00", "07:45", "09:15", "12:00", "15:30"],
       "stops": [
-        { "name": "Howrah",       "coords": [22.5958, 88.2636] },
-        { "name": "Esplanade",    "coords": [22.5675, 88.3476] },
-        { "name": "Sealdah",      "coords": [22.5673, 88.3695] },
-        { "name": "Dhakuria",     "coords": [22.5017, 88.3706] },
-        { "name": "Garia",        "coords": [22.4648, 88.3773] }
+        {"name":"Barasat","coords":[22.7218,88.4814]},
+        {"name":"Dum Dum","coords":[22.6276,88.4220]},
+        {"name":"Shyambazar","coords":[22.6076,88.3730]},
+        {"name":"Howrah","coords":[22.5958,88.2636]}
       ]
     },
     {
       "name": "L238",
       "color": "#f59e0b",
+      "timings": ["06:20","08:00","10:00","14:00"],
       "stops": [
-        { "name": "Dunlop",       "coords": [22.6532, 88.3729] },
-        { "name": "Baranagar",    "coords": [22.6414, 88.3773] },
-        { "name": "Shyambazar",   "coords": [22.6076, 88.3730] },
-        { "name": "Maniktala",    "coords": [22.5948, 88.3776] },
-        { "name": "Ultadanga",    "coords": [22.5935, 88.3970] },
-        { "name": "Salt Lake",    "coords": [22.5867, 88.4173] }
+        {"name":"Dunlop","coords":[22.6532,88.3729]},
+        {"name":"Baranagar","coords":[22.6414,88.3773]},
+        {"name":"Shyambazar","coords":[22.6076,88.3730]},
+        {"name":"Maniktala","coords":[22.5948,88.3776]},
+        {"name":"Ultadanga","coords":[22.5996,88.4016]},
+        {"name":"Salt Lake","coords":[22.5867,88.4173]}
       ]
     },
     {
       "name": "46",
       "color": "#10b981",
+      "timings": ["07:00","09:00","12:00","16:00"],
       "stops": [
-        { "name": "Howrah",       "coords": [22.5958, 88.2636] },
-        { "name": "Burrabazar",   "coords": [22.5741, 88.3524] },
-        { "name": "Esplanade",    "coords": [22.5675, 88.3476] },
-        { "name": "Park Street",  "coords": [22.5527, 88.3523] },
-        { "name": "Gariahat",     "coords": [22.5204, 88.3639] },
-        { "name": "Jadavpur",     "coords": [22.4977, 88.3701] }
-      ]
-    },
-    {
-      "name": "S12",
-      "color": "#8b5cf6",
-      "stops": [
-        { "name": "Airport",      "coords": [22.6450, 88.4393] },
-        { "name": "Dum Dum",      "coords": [22.6222, 88.3944] },
-        { "name": "Shyambazar",   "coords": [22.6076, 88.3730] },
-        { "name": "Esplanade",    "coords": [22.5675, 88.3476] },
-        { "name": "Kalighat",     "coords": [22.5187, 88.3468] },
-        { "name": "Tollygunge",   "coords": [22.5016, 88.3465] }
+        {"name":"Howrah","coords":[22.5958,88.2636]},
+        {"name":"Burrabazar","coords":[22.5741,88.3524]},
+        {"name":"Esplanade","coords":[22.5675,88.3476]},
+        {"name":"Park Street","coords":[22.5527,88.3523]},
+        {"name":"Gariahat","coords":[22.5204,88.3639]},
+        {"name":"Jadavpur","coords":[22.4977,88.3701]}
       ]
     }
   ]
 }
+
