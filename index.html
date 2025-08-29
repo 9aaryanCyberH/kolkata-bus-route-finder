@@ -10,19 +10,21 @@
 <body>
   <header>
     <h1>🚌 Kolkata Bus Route Finder</h1>
+    <p id="datetime"></p>
+    <p id="weather"></p>
   </header>
 
-  <div class="search-bar">
-    <input type="text" id="fromInput" placeholder="From (stop name)">
-    <input type="text" id="toInput" placeholder="To (stop name)">
-    <button onclick="findRoutes()">Search</button>
-  </div>
+  <section class="search">
+    <input type="text" id="from" placeholder="From stop">
+    <input type="text" id="to" placeholder="To stop">
+    <button onclick="findRoute()">Find Bus</button>
+  </section>
 
   <div id="map"></div>
-  <div id="results"></div>
+
+  <section id="results"></section>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="routes.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
