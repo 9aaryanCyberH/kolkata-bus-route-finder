@@ -1,14 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kolkata Bus Route Finder</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 </head>
 <body>
-  <h1>🚌 Kolkata Bus Route Finder</h1>
-  <div id="map"></div>
+  <header>
+    <h1>🚌 Kolkata Bus Route Finder</h1>
+    <form id="search-form" autocomplete="off">
+      <div class="input-wrap">
+        <label for="from-stop">From</label>
+        <input list="stops-list" id="from-stop" placeholder="Start stop (e.g., Esplanade)"/>
+      </div>
+      <div class="input-wrap">
+        <label for="to-stop">To</label>
+        <input list="stops-list" id="to-stop" placeholder="Destination stop (e.g., Garia)"/>
+      </div>
+      <datalist id="stops-list"></datalist>
+      <button type="submit">Find Buses</button>
+      <button type="button" id="reset-btn" class="secondary">Reset</button>
+    </form>
+  </header>
+
+  <main>
+    <section id="map"></section>
+    <aside id="results">
+      <h2>Results</h2>
+      <div id="results-body">
+        <p>Enter a <b>From</b> and <b>To</b> stop to see matching buses.</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <small>Map data © OpenStreetMap contributors • Built with Leaflet</small>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
