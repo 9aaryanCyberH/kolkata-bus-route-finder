@@ -1,30 +1,55 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Kolkata Bus Route Finder</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
   <header>
     <h1>🚌 Kolkata Bus Route Finder</h1>
-    <p id="datetime"></p>
-    <p id="weather"></p>
+    <div class="top-info">
+      <div id="local-time">🕒 --:--:--</div>
+      <div id="weather">🌤️ Loading weather…</div>
+      <button id="loc-btn">📍 My Location</button>
+    </div>
   </header>
 
-  <section class="search">
-    <input type="text" id="from" placeholder="From stop">
-    <input type="text" id="to" placeholder="To stop">
-    <button onclick="findRoute()">Find Bus</button>
+  <section class="controls">
+    <form id="search-form" autocomplete="off">
+      <div class="field">
+        <label for="from">From</label>
+        <input id="from" list="stops-list" placeholder="Start stop" />
+      </div>
+      <div class="field">
+        <label for="to">To</label>
+        <input id="to" list="stops-list" placeholder="Destination" />
+      </div>
+      <datalist id="stops-list"></datalist>
+      <button type="submit">Find Buses</button>
+      <button type="button" id="reset">Reset</button>
+    </form>
   </section>
 
-  <div id="map"></div>
+  <main>
+    <div id="map"></div>
+    <aside id="panel">
+      <h2>Results</h2>
+      <div id="results">
+        <p>Enter both <strong>From</strong> and <strong>To</strong> stops and click <em>Find Buses</em>.</p>
+      </div>
+    </aside>
+  </main>
 
-  <section id="results"></section>
+  <footer>
+    Map data © OpenStreetMap contributors • Weather from Open-Meteo (no API key)
+  </footer>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="bus-routes.json" type="application/json" id="routes-json"></script>
   <script src="script.js"></script>
 </body>
 </html>
