@@ -1,0 +1,11 @@
+// Initialize map
+var map = L.map('map').setView([22.5726, 88.3639], 12);
+
+// Add OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Example bus stop markers
+L.marker([22.5726, 88.3639]).addTo(map).bindPopup("Esplanade");
+L.marker([22.5958, 88.2636]).addTo(map).bindPopup("Baranagar");
