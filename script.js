@@ -1,56 +1,68 @@
 // Initialize map
-const map = L.map("map").setView([22.57, 88.36], 12);
+const map = L.map('map').setView([22.5726, 88.3639], 12); // Kolkata center
 
-// Add OpenStreetMap tile layer
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: '&copy; OpenStreetMap contributors'
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap'
 }).addTo(map);
 
-let activeLayers = [];
+// Show current datetime
+function updateDateTime() {
+  document.getElementById("datetime").innerText = "🕒 " + new Date().toLocaleString();
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
 
-// Function to highlight bus routes
-function drawRoute(route) {
-  // Clear old routes
-  activeLayers.forEach(layer => map.removeLayer(layer));
-  activeLayers = [];
-
-  const latlngs = route.stops.map(s => s.coords);
-  const polyline = L.polyline(latlngs, { color: "blue", weight: 5 }).addTo(map);
-  activeLayers.push(polyline);
-
-  // Add stop markers
-  route.stops.forEach(stop => {
-    const marker = L.marker(stop.coords).addTo(map).bindPopup(`<b>${stop.name}</b>`);
-    activeLayers.push(marker);
-  });
-
-  map.fitBounds(polyline.getBounds());
+// Weather API (OpenWeatherMap - replace with your API key)
+function getWeather(lat, lon) {
+  const apiKey = "YOUR_API_KEY"; 
+  fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("weather").innerText =
+        `🌤️ ${data.name}: ${data.main.temp}°C, ${data.weather[0].description}`;
+    })
+    .catch(() => {
+      document.getElementById("weather").innerText = "⚠️ Weather data unavailable";
+    });
 }
 
-// Search function
-function findRoutes() {
-  const from = document.getElementById("fromInput").value.trim().toLowerCase();
-  const to = document.getElementById("toInput").value.trim().toLowerCase();
-  const resultsDiv = document.getElementById("results");
+// Get geolocation
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(pos => {
+    getWeather(pos.coords.latitude, pos.coords.longitude);
+  });
+}
 
-  let foundRoutes = [];
+// Find route
+function findRoute() {
+  const from = document.getElementById("from").value.trim();
+  const to = document.getElementById("to").value.trim();
+  const results = document.getElementById("results");
+  results.innerHTML = "";
+
+  let found = false;
 
   busRoutes.forEach(route => {
-    const stopNames = route.stops.map(s => s.name.toLowerCase());
-    if (stopNames.includes(from) && stopNames.includes(to)) {
-      foundRoutes.push(route);
+    if (route.stops.includes(from) && route.stops.includes(to)) {
+      found = true;
+
+      // Show info
+      results.innerHTML += `<h3>Bus ${route.number}</h3>
+        <p>Stops: ${route.stops.join(" → ")}</p>
+        <p>Timings: ${route.timings.join(", ")}</p>`;
+
+      // Highlight route on map
+      const polyline = L.polyline(route.coordinates, {color: 'blue'}).addTo(map);
+      map.fitBounds(polyline.getBounds());
+
+      // Add stop markers
+      route.coordinates.forEach((coord, i) => {
+        L.marker(coord).addTo(map).bindPopup(route.stops[i]);
+      });
     }
   });
 
-  if (foundRoutes.length === 0) {
-    resultsDiv.innerHTML = "<p>No direct bus routes found.</p>";
-  } else {
-    resultsDiv.innerHTML = "<h3>Available Buses:</h3>";
-    foundRoutes.forEach(route => {
-      const btn = document.createElement("button");
-      btn.innerText = `Bus ${route.number}`;
-      btn.onclick = () => drawRoute(route);
-      resultsDiv.appendChild(btn);
-    });
+  if (!found) {
+    results.innerHTML = "<p>❌ No direct bus route found for this journey.</p>";
   }
 }
