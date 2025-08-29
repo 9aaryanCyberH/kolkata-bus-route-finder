@@ -1,11 +1,192 @@
-// Initialize map
-var map = L.map('map').setView([22.5726, 88.3639], 12);
-
-// Add OpenStreetMap tiles
+// --- Basic Map Setup ---
+const map = L.map('map').setView([22.5726, 88.3639], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Example bus stop markers
-L.marker([22.5726, 88.3639]).addTo(map).bindPopup("Esplanade");
-L.marker([22.5958, 88.2636]).addTo(map).bindPopup("Baranagar");
+// Global state
+let ROUTE_DATA = null;
+const routeLayers = [];     // { name, baseColor, polyline, labelMarker, stopMarkers[] }
+let stopIndex = new Map();  // stopNameLower -> [{routeName, stop, index}]
+let allStopNames = new Set();
+
+// UI
+const fromInput = document.getElementById('from-stop');
+const toInput   = document.getElementById('to-stop');
+const datalist  = document.getElementById('stops-list');
+const form      = document.getElementById('search-form');
+const resultsEl = document.getElementById('results-body');
+const resetBtn  = document.getElementById('reset-btn');
+
+// Utilities
+const norm = s => (s || '').trim().toLowerCase();
+function midpoint(coords){
+  const i = Math.floor(coords.length/2);
+  return coords[i];
+}
+function fitRoutes(boundsList){
+  if(boundsList.length===0) return;
+  let b = boundsList[0];
+  for(let i=1;i<boundsList.length;i++) b = b.extend(boundsList[i]);
+  map.fitBounds(b, {padding:[30,30]});
+}
+
+// Render a label marker for a route
+function makeLabel(latlng, text){
+  return L.marker(latlng, {
+    icon: L.divIcon({
+      className: 'route-label',
+      html: text,
+      iconAnchor: [0,0]
+    })
+  });
+}
+
+// Build stop index and datalist
+function buildStopIndex(data){
+  data.routes.forEach(route=>{
+    route.stops.forEach((stop, idx)=>{
+      const key = norm(stop.name);
+      allStopNames.add(stop.name);
+      if(!stopIndex.has(key)) stopIndex.set(key, []);
+      stopIndex.get(key).push({ routeName: route.name, stop, index: idx });
+    });
+  });
+  // Fill datalist
+  const opts = [...allStopNames].sort().map(s=>`<option value="${s}"></option>`).join('');
+  datalist.innerHTML = opts;
+}
+
+// Render all routes (lines + markers + labels)
+function renderRoutes(data){
+  data.routes.forEach(route=>{
+    const latlngs = route.stops.map(s => s.coords);
+    const poly = L.polyline(latlngs, {
+      color: route.color,
+      weight: 4,
+      opacity: 0.9
+    }).addTo(map);
+
+    // Stop markers
+    const markers = route.stops.map(s => {
+      return L.marker(s.coords).addTo(map)
+        .bindPopup(`<b>${s.name}</b><br/>Route: ${route.name}`);
+    });
+
+    // Label at midpoint
+    const label = makeLabel(midpoint(latlngs), route.name).addTo(map);
+
+    routeLayers.push({
+      name: route.name,
+      baseColor: route.color,
+      polyline: poly,
+      labelMarker: label,
+      stopMarkers: markers,
+      latlngs
+    });
+  });
+
+  // Fit bounds of all routes initially
+  const boundsList = routeLayers.map(rl => L.latLngBounds(rl.latlngs));
+  fitRoutes(boundsList);
+}
+
+// Dim/Highlight logic
+function dimAll(){
+  routeLayers.forEach(rl=>{
+    rl.polyline.setStyle({ weight: 3, opacity: 0.25 });
+    rl.stopMarkers.forEach(m=>m.getElement()?.classList.add('dimmed'));
+    const el = rl.labelMarker.getElement();
+    if(el) el.classList.add('dimmed');
+  });
+}
+function resetStyles(){
+  routeLayers.forEach(rl=>{
+    rl.polyline.setStyle({ color: rl.baseColor, weight: 4, opacity: 0.9 });
+    rl.stopMarkers.forEach(m=>m.getElement()?.classList.remove('dimmed'));
+    const el = rl.labelMarker.getElement();
+    if(el) el.classList.remove('dimmed');
+  });
+}
+function highlightRoutes(names){
+  const bounds = [];
+  routeLayers.forEach(rl=>{
+    if(names.has(rl.name)){
+      rl.polyline.setStyle({ color: '#ef4444', weight: 6, opacity: 1 });
+      rl.stopMarkers.forEach(m=>m.getElement()?.classList.remove('dimmed'));
+      const el = rl.labelMarker.getElement();
+      if(el) el.classList.remove('dimmed');
+      bounds.push(L.latLngBounds(rl.latlngs));
+    }
+  });
+  fitRoutes(bounds);
+}
+
+// Find matching routes between two stops (any direction)
+function findRoutesBetween(fromName, toName){
+  const fKey = norm(fromName);
+  const tKey = norm(toName);
+  const fromHits = (stopIndex.get(fKey) || []);
+  const toHits   = (stopIndex.get(tKey) || []);
+  if(fromHits.length===0 || toHits.length===0) return [];
+
+  // map routeName -> indices where from/to occur
+  const toByRoute = new Map();
+  toHits.forEach(h=>{
+    if(!toByRoute.has(h.routeName)) toByRoute.set(h.routeName, []);
+    toByRoute.get(h.routeName).push(h.index);
+  });
+
+  const matches = [];
+  fromHits.forEach(fh=>{
+    const cand = toByRoute.get(fh.routeName);
+    if(!cand) return;
+    // if any order (both directions)
+    cand.forEach(toIdx=>{
+      if (toIdx !== fh.index){
+        const dir = (toIdx > fh.index) ? "→" : "←";
+        matches.push({ routeName: fh.routeName, fromIdx: fh.index, toIdx, dir });
+      }
+    });
+  });
+
+  // Unique by route (but keep multiple directions if both valid)
+  // (You can choose to unique only by routeName if you prefer)
+  return matches;
+}
+
+// Render results list
+function renderResults(fromName, toName, matches){
+  if(matches.length===0){
+    resultsEl.innerHTML = `<div class="result-card">
+      <h3>No direct buses found</h3>
+      <p>Try different stop names or check spelling. You can also pick nearby major stops.</p>
+    </div>`;
+    return;
+  }
+  const byRoute = new Map();
+  matches.forEach(m=>{
+    if(!byRoute.has(m.routeName)) byRoute.set(m.routeName, []);
+    byRoute.get(m.routeName).push(m);
+  });
+
+  let html = '';
+  byRoute.forEach((arr, routeName)=>{
+    // Get base color for chip
+    const rl = routeLayers.find(r=>r.name===routeName);
+    const color = rl?.baseColor || '#666';
+    // Direction summary
+    const dirs = [...new Set(arr.map(a=>a.dir))].join(' / ');
+    html += `<div class="result-card">
+      <h3>${routeName} <span class="route-chip"><span class="route-badge" style="background:${color}"></span>${routeName}</span></h3>
+      <p><b>${fromName}</b> to <b>${toName}</b> • Direction: ${dirs}</p>
+      <p>Tap on the red-highlighted line on map to view stops.</p>
+    </div>`;
+  });
+  resultsEl.innerHTML = html;
+}
+
+// Handle search
+form.addEventListener('submit', (e)=>{
+  e.preventDefault();
+
