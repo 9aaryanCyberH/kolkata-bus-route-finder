@@ -1,39 +1,35 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
+:root{
+  --brand:#0a66c2;
+  --card:#fff;
+  --muted:#6b7280;
+  --border:#e6e6e9;
 }
 
-header {
-  background: #0077cc;
-  color: white;
-  padding: 10px;
-  text-align: center;
-}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;color:#111}
+header{background:var(--card);padding:12px 16px;border-bottom:1px solid var(--border)}
+header h1{margin:0;color:var(--brand);font-size:20px;display:inline-block}
+.top-info{display:inline-flex;gap:12px;align-items:center;margin-left:18px}
+#local-time,#weather{font-size:14px;color:var(--muted)}
+#loc-btn{margin-left:8px;padding:6px 8px;border-radius:8px;border:1px solid var(--border);background:#fff;cursor:pointer}
 
-.search {
-  padding: 10px;
-  background: #f4f4f4;
-  text-align: center;
-}
+.controls{padding:12px;background:#fbfbfc;border-bottom:1px solid var(--border)}
+#search-form{display:flex;gap:8px;align-items:end;flex-wrap:wrap}
+.field{display:flex;flex-direction:column}
+label{font-size:12px;color:var(--muted);margin-bottom:4px}
+input{padding:8px 10px;border:1px solid var(--border);border-radius:8px;min-width:200px}
+button{padding:9px 12px;border-radius:8px;border:none;background:var(--brand);color:#fff;cursor:pointer}
+button[type="button"]#reset{background:#efefef;color:#111;border:1px solid var(--border)}
 
-.search input {
-  padding: 8px;
-  margin: 5px;
-  width: 150px;
-}
+main{display:grid;grid-template-columns:1fr 360px;gap:12px;padding:12px}
+#map{height:calc(100vh - 220px);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+#panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;height:calc(100vh - 220px);overflow:auto}
+#panel h2{margin:0 0 8px 0}
+.result-card{border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;background:#fff}
+.route-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);font-weight:600;margin-top:8px}
+.route-color{width:12px;height:12px;border-radius:50%;display:inline-block}
 
-.search button {
-  padding: 8px 12px;
-  background: #0077cc;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
+footer{padding:8px 12px;text-align:center;color:var(--muted);font-size:13px;border-top:1px solid var(--border);background:#fff}
 
-#map {
-  height: 500px;
-}
-
-#results {
-  padding: 10px;
-}
+.leaflet-popup-content{font-size:14px}
+.dimmed{opacity:0.25}
